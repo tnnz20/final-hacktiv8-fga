@@ -1,0 +1,6 @@
+Database:
+  Host: localhost
+  Port: 5432
+  Name: dbname
+  User: username
+  Password: userpassword
