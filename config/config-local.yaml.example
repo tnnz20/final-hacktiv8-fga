@@ -4,3 +4,10 @@ Database:
   Name: dbname
   User: username
   Password: userpassword
+
+Server:
+  Name: mygram
+  Port: 8080
+
+Token:
+  JWTSecret: iPkm-tpd6sZLjHbOGo9Wx_vtJhknxFRXj7Lzb7sAkTc=
