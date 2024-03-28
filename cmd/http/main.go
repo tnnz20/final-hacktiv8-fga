@@ -70,12 +70,19 @@ func main() {
 
 	router.NewPhotoRouter(e, photoHandler, configMiddleware)
 
-	// // Comment
-	// commentRepo := repository.NewCommentRepository(db.GetDB())
-	// commentService := service.NewCommentService(commentRepo)
-	// commentHandler := handler.NewCommentHandler(commentService, validate)
+	// Comment
+	commentRepo := repository.NewCommentRepository(db.GetDB())
+	commentService := service.NewCommentService(commentRepo, userRepo, photoRepo)
+	commentHandler := handler.NewCommentHandler(commentService, validate)
 
-	// router.NewCommentRouter(e, commentHandler, configMiddleware)
+	router.NewCommentRouter(e, commentHandler, configMiddleware)
+
+	// Social Media
+	socialMediaRepo := repository.NewSocialMediaRepository(db.GetDB())
+	socialMediaService := service.NewSocialMediaService(socialMediaRepo, userRepo)
+	socialMediaHandler := handler.NewSocialMediaHandler(socialMediaService, validate)
+
+	router.NewSocialMediasRouter(e, socialMediaHandler, configMiddleware)
 
 	// Start server
 	cfgServer := cfg.GetServerConfig()
