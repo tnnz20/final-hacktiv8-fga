@@ -3,7 +3,7 @@ package domain
 import "errors"
 
 var (
-	ErrUnauthorized = errors.New("you are not authorized to update")
+	ErrUnauthorized = errors.New("you are not authorized to change this data")
 	ErrInvalidId    = errors.New("invalid id must be a number")
 
 	ErrUserNotFound  = errors.New("user not found")
