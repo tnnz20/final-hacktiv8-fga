@@ -1,9 +1,11 @@
 Database:
-  Host: localhost
-  Port: 5432
-  Name: dbname
-  User: username
-  Password: userpassword
+  Postgres:
+    Host: localhost
+    Port: 5432
+    Name: dbname
+    User: username
+    Password: userpassword
+    SSLMode: disable
 
 Server:
   Name: mygram
