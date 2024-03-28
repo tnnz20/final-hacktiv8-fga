@@ -53,20 +53,18 @@ func (s *PhotoService) Update(ctx context.Context, req *domain.UpdatePhotoReques
 	ctx, cancel := context.WithTimeout(ctx, s.timeout)
 	defer cancel()
 
-	checkPhoto, err := s.PhotoRepository.FindPhotoByID(ctx, photoId)
+	photo, err := s.PhotoRepository.FindPhotoByID(ctx, photoId)
 	if err != nil {
 		return nil, err
-	} else if checkPhoto.UserID != userId {
+	}
+
+	if photo.UserID != userId {
 		return nil, domain.ErrUnauthorized
 	}
 
-	photo := &domain.Photo{
-		ID:       photoId,
-		Title:    req.Title,
-		Caption:  req.Caption,
-		PhotoURL: req.PhotoURL,
-		UserID:   userId,
-	}
+	photo.Title = req.Title
+	photo.Caption = req.Caption
+	photo.PhotoURL = req.PhotoURL
 
 	updatedPhoto, err := s.PhotoRepository.Update(ctx, photo)
 	if err != nil {
@@ -88,14 +86,16 @@ func (s *PhotoService) Delete(ctx context.Context, photoId, userId int) error {
 	ctx, cancel := context.WithTimeout(ctx, s.timeout)
 	defer cancel()
 
-	checkPhoto, err := s.PhotoRepository.FindPhotoByID(ctx, photoId)
+	photo, err := s.PhotoRepository.FindPhotoByID(ctx, photoId)
 	if err != nil {
 		return err
-	} else if checkPhoto.UserID != userId {
+	}
+
+	if photo.UserID != userId {
 		return domain.ErrUnauthorized
 	}
 
-	if err := s.PhotoRepository.Delete(ctx, photoId); err != nil {
+	if err := s.PhotoRepository.Delete(ctx, photo.ID); err != nil {
 		return err
 	}
 
