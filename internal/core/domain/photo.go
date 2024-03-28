@@ -29,8 +29,8 @@ type userPhoto struct {
 }
 type GetPhoto struct {
 	ID       int       `json:"id"`
-	Title    string    `json:"title"`
 	Caption  string    `json:"caption"`
+	Title    string    `json:"title"`
 	PhotoURL string    `json:"photo_url"`
 	UserID   int       `json:"user_id"`
 	User     userPhoto `json:"user"`
