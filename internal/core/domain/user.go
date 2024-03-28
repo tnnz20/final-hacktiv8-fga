@@ -26,7 +26,7 @@ type CreateUserResponse struct {
 	Username        string `json:"username"`
 	Email           string `json:"email"`
 	Password        string `json:"password"`
-	Age             int    `json:"age "`
+	Age             int    `json:"age"`
 	ProfileImageURL string `json:"profile_image_url"`
 }
 
