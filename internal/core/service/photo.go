@@ -10,12 +10,14 @@ import (
 
 type PhotoService struct {
 	PhotoRepository port.PhotoRepository
+	UserRepository  port.UserRepository
 	timeout         time.Duration
 }
 
-func NewPhotoService(repository port.PhotoRepository) *PhotoService {
+func NewPhotoService(photoRepo port.PhotoRepository, userRepo port.UserRepository) *PhotoService {
 	return &PhotoService{
-		PhotoRepository: repository,
+		PhotoRepository: photoRepo,
+		UserRepository:  userRepo,
 		timeout:         time.Duration(3) * time.Second,
 	}
 }
@@ -56,6 +58,17 @@ func (s *PhotoService) GetAll(ctx context.Context) (*[]domain.GetPhoto, error) {
 		return nil, err
 	}
 
+	for i, photo := range *photos {
+		user, err := s.UserRepository.GetUserById(ctx, photo.UserID)
+		if err != nil {
+			return nil, err
+		}
+
+		(*photos)[i].User.ID = user.ID
+		(*photos)[i].User.Username = user.Username
+		(*photos)[i].User.Email = user.Email
+	}
+
 	return photos, nil
 }
 
@@ -68,6 +81,15 @@ func (s *PhotoService) GetByID(ctx context.Context, id int) (*domain.GetPhoto, e
 		return nil, err
 	}
 
+	user, err := s.UserRepository.GetUserById(ctx, photo.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	photo.User.ID = user.ID
+	photo.User.Username = user.Username
+	photo.User.Email = user.Email
+
 	return photo, nil
 }
 
@@ -75,8 +97,10 @@ func (s *PhotoService) Update(ctx context.Context, req *domain.UpdatePhotoReques
 	ctx, cancel := context.WithTimeout(ctx, s.timeout)
 	defer cancel()
 
-	checkPhoto, _ := s.PhotoRepository.FindByUserID(ctx, userId)
-	if checkPhoto.UserID != userId {
+	checkPhoto, err := s.PhotoRepository.FindByID(ctx, photoId)
+	if err != nil {
+		return nil, err
+	} else if checkPhoto.UserID != userId {
 		return nil, domain.ErrUnauthorized
 	}
 
@@ -108,8 +132,10 @@ func (s *PhotoService) Delete(ctx context.Context, photoId, userId int) error {
 	ctx, cancel := context.WithTimeout(ctx, s.timeout)
 	defer cancel()
 
-	checkPhoto, _ := s.PhotoRepository.FindByUserID(ctx, userId)
-	if checkPhoto.UserID != userId {
+	checkPhoto, err := s.PhotoRepository.FindByID(ctx, photoId)
+	if err != nil {
+		return err
+	} else if checkPhoto.UserID != userId {
 		return domain.ErrUnauthorized
 	}
 
