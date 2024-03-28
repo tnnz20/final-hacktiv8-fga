@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/tnnz20/final-hacktiv8-fga/internal/adapters/storage/postgres"
 	"github.com/tnnz20/final-hacktiv8-fga/internal/core/domain"
@@ -24,22 +25,19 @@ func (r UserRepository) Create(ctx context.Context, user *domain.User) (*domain.
 		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id
 	`
-	err := r.Db.QueryRowContext(ctx, query, user.Username,
-		user.Email, user.Password, user.Age, user.ProfileImageURL).Scan(&id)
+	row, err := r.Db.QueryRowContext(ctx, query, user.Username, user.Email,
+		user.Password, user.Age, user.ProfileImageURL)
 	if err != nil {
 		return nil, err
 	}
 
-	u := &domain.User{
-		ID:              id,
-		Username:        user.Username,
-		Email:           user.Email,
-		Password:        user.Password,
-		Age:             user.Age,
-		ProfileImageURL: user.ProfileImageURL,
+	if err := row.Scan(&id); err != nil {
+		return nil, err
 	}
 
-	return u, nil
+	user.ID = id
+
+	return user, nil
 }
 
 func (r UserRepository) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
@@ -50,9 +48,16 @@ func (r UserRepository) GetUserByEmail(ctx context.Context, email string) (*doma
 		FROM users
 		WHERE email = $1
 	`
-	err := r.Db.QueryRowContext(ctx, query, email).Scan(&user.ID, &user.Username,
-		&user.Email, &user.Password, &user.Age, &user.ProfileImageURL)
+	row, err := r.Db.QueryRowContext(ctx, query, email)
 	if err != nil {
+		if row.Err() == sql.ErrNoRows {
+			return nil, domain.ErrUserNotFound
+		}
+		return nil, err
+	}
+
+	if err := row.Scan(&user.ID, &user.Username, &user.Email,
+		&user.Password, &user.Age, &user.ProfileImageURL); err != nil {
 		return nil, err
 	}
 
@@ -67,9 +72,16 @@ func (r UserRepository) GetUserById(ctx context.Context, id int) (*domain.User, 
 		FROM users
 		WHERE id = $1
 	`
-	err := r.Db.QueryRowContext(ctx, query, id).Scan(&user.ID, &user.Username,
-		&user.Email, &user.Password, &user.Age, &user.ProfileImageURL)
+	row, err := r.Db.QueryRowContext(ctx, query, id)
 	if err != nil {
+		if row.Err() == sql.ErrNoRows {
+			return nil, domain.ErrUserNotFound
+		}
+		return nil, err
+	}
+
+	if err := row.Scan(&user.ID, &user.Username, &user.Email,
+		&user.Password, &user.Age, &user.ProfileImageURL); err != nil {
 		return nil, err
 	}
 
@@ -84,10 +96,14 @@ func (r UserRepository) Update(ctx context.Context, user *domain.User) (*domain.
 		RETURNING id, username, email, age, profile_image_url
 	`
 
-	err := r.Db.QueryRowContext(ctx, query, user.Username, user.Email,
-		user.Age, user.ProfileImageURL, user.ID).Scan(&user.ID, &user.Username,
-		&user.Email, &user.Age, &user.ProfileImageURL)
+	row, err := r.Db.QueryRowContext(ctx, query, user.Username, user.Email,
+		user.Age, user.ProfileImageURL, user.ID)
 	if err != nil {
+		return nil, err
+	}
+
+	if err := row.Scan(&user.ID, &user.Username, &user.Email,
+		&user.Age, &user.ProfileImageURL); err != nil {
 		return nil, err
 	}
 
