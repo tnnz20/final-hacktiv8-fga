@@ -11,6 +11,7 @@ import (
 
 	"github.com/tnnz20/final-hacktiv8-fga/config"
 	handler "github.com/tnnz20/final-hacktiv8-fga/internal/adapters/handler/http"
+	middle "github.com/tnnz20/final-hacktiv8-fga/internal/adapters/handler/http/middleware"
 	"github.com/tnnz20/final-hacktiv8-fga/internal/adapters/handler/http/router"
 	"github.com/tnnz20/final-hacktiv8-fga/internal/adapters/storage/postgres"
 	"github.com/tnnz20/final-hacktiv8-fga/internal/adapters/storage/postgres/repository"
@@ -52,12 +53,29 @@ func main() {
 	// Validator
 	validate := validator.New()
 
+	// Middleware Config
+	configMiddleware := middle.JWTConfig(&JwtSecretKey)
+
 	// User
 	userRepo := repository.NewUserRepository(db.GetDB())
 	userService := service.NewUserService(userRepo, &JwtSecretKey)
 	userHandler := handler.NewUserHandler(userService, validate)
 
-	router.NewUserRouter(e, &JwtSecretKey, userHandler)
+	router.NewUserRouter(e, userHandler, configMiddleware)
+
+	// Photo
+	photoRepo := repository.NewPhotoRepository(db.GetDB())
+	photoService := service.NewPhotoService(photoRepo)
+	photoHandler := handler.NewPhotoHandler(photoService, validate)
+
+	router.NewPhotoRouter(e, photoHandler, configMiddleware)
+
+	// // Comment
+	// commentRepo := repository.NewCommentRepository(db.GetDB())
+	// commentService := service.NewCommentService(commentRepo)
+	// commentHandler := handler.NewCommentHandler(commentService, validate)
+
+	// router.NewCommentRouter(e, commentHandler, configMiddleware)
 
 	// Start server
 	cfgServer := cfg.GetServerConfig()
