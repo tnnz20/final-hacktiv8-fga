@@ -65,7 +65,7 @@ func main() {
 
 	// Photo
 	photoRepo := repository.NewPhotoRepository(db.GetDB())
-	photoService := service.NewPhotoService(photoRepo)
+	photoService := service.NewPhotoService(photoRepo, userRepo)
 	photoHandler := handler.NewPhotoHandler(photoService, validate)
 
 	router.NewPhotoRouter(e, photoHandler, configMiddleware)
