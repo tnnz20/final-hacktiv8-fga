@@ -51,8 +51,8 @@ func (h *PhotoHandler) Create(c echo.Context) error {
 	return utils.SuccessResponse(c, http.StatusCreated, "Photo created successfully", res)
 }
 
-func (h *PhotoHandler) GetAll(c echo.Context) error {
-	res, err := h.PhotoService.GetAll(c.Request().Context())
+func (h *PhotoHandler) GetPhotos(c echo.Context) error {
+	res, err := h.PhotoService.GetPhotos(c.Request().Context())
 	if err != nil {
 		return utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
@@ -60,14 +60,14 @@ func (h *PhotoHandler) GetAll(c echo.Context) error {
 	return utils.SuccessResponse(c, http.StatusOK, "Get all photo successfully", res)
 }
 
-func (h *PhotoHandler) GetByID(c echo.Context) error {
+func (h *PhotoHandler) GetPhotoByID(c echo.Context) error {
 
 	photoId, err := strconv.Atoi((c.Param("photoId")))
 	if err != nil {
 		return utils.ErrorResponse(c, http.StatusBadRequest, domain.ErrInvalidId.Error())
 	}
 
-	res, err := h.PhotoService.GetByID(c.Request().Context(), photoId)
+	res, err := h.PhotoService.GetPhotoByID(c.Request().Context(), photoId)
 	if err != nil {
 		return utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}

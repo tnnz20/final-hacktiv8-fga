@@ -10,8 +10,8 @@ type UserRepository interface {
 	Create(ctx context.Context, user *domain.User) (*domain.User, error)
 	Update(ctx context.Context, user *domain.User) (*domain.User, error)
 	Delete(ctx context.Context, id int) error
-	GetUserByEmail(ctx context.Context, email string) (*domain.User, error)
-	GetUserById(ctx context.Context, id int) (*domain.User, error)
+	FindUserByEmail(ctx context.Context, email string) (*domain.User, error)
+	FindUserById(ctx context.Context, id int) (*domain.User, error)
 }
 
 type UserService interface {

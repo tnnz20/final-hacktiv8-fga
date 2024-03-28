@@ -29,7 +29,7 @@ func (s *UserService) Register(ctx context.Context, req *domain.CreateUserReques
 	ctx, cancel := context.WithTimeout(ctx, s.timeout)
 	defer cancel()
 
-	user, err := s.UserRepository.GetUserByEmail(ctx, req.Email)
+	user, err := s.UserRepository.FindUserByEmail(ctx, req.Email)
 	if err == nil {
 		if user.Email == req.Email {
 			return nil, domain.ErrEmailExist
@@ -72,7 +72,7 @@ func (s *UserService) Login(ctx context.Context, req *domain.LoginUserRequest) (
 	ctx, cancel := context.WithTimeout(ctx, s.timeout)
 	defer cancel()
 
-	user, err := s.UserRepository.GetUserByEmail(ctx, req.Email)
+	user, err := s.UserRepository.FindUserByEmail(ctx, req.Email)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +131,7 @@ func (s *UserService) Delete(ctx context.Context, id int) error {
 	ctx, cancel := context.WithTimeout(ctx, s.timeout)
 	defer cancel()
 
-	if _, err := s.UserRepository.GetUserById(ctx, id); err != nil {
+	if _, err := s.UserRepository.FindUserById(ctx, id); err != nil {
 		return err
 	}
 

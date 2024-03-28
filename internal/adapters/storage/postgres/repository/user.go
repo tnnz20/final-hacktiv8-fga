@@ -39,45 +39,6 @@ func (r UserRepository) Create(ctx context.Context, user *domain.User) (*domain.
 	return user, nil
 }
 
-func (r UserRepository) GetUserByEmail(ctx context.Context, email string) (*domain.User, error) {
-	var user domain.User
-
-	query := `
-		SELECT id, username, email, password, age, profile_image_url
-		FROM users
-		WHERE email = $1
-	`
-	err := r.Db.QueryRowContext(ctx, query, email).Scan(&user.ID, &user.Username,
-		&user.Email, &user.Password, &user.Age, &user.ProfileImageURL)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, domain.ErrUserNotFound
-		}
-		return nil, err
-	}
-	return &user, nil
-}
-
-func (r UserRepository) GetUserById(ctx context.Context, id int) (*domain.User, error) {
-	var user domain.User
-
-	query := `
-		SELECT id, username, email, password, age, profile_image_url
-		FROM users
-		WHERE id = $1
-	`
-	err := r.Db.QueryRowContext(ctx, query, id).Scan(&user.ID, &user.Username, &user.Email,
-		&user.Password, &user.Age, &user.ProfileImageURL)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, domain.ErrUserNotFound
-		}
-		return nil, err
-	}
-
-	return &user, nil
-}
-
 func (r UserRepository) Update(ctx context.Context, user *domain.User) (*domain.User, error) {
 	query := `
 		UPDATE users
@@ -110,4 +71,43 @@ func (r UserRepository) Delete(ctx context.Context, id int) error {
 	}
 
 	return nil
+}
+
+func (r UserRepository) FindUserByEmail(ctx context.Context, email string) (*domain.User, error) {
+	var user domain.User
+
+	query := `
+		SELECT id, username, email, password, age, profile_image_url
+		FROM users
+		WHERE email = $1
+	`
+	err := r.Db.QueryRowContext(ctx, query, email).Scan(&user.ID, &user.Username,
+		&user.Email, &user.Password, &user.Age, &user.ProfileImageURL)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, domain.ErrUserNotFound
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r UserRepository) FindUserById(ctx context.Context, id int) (*domain.User, error) {
+	var user domain.User
+
+	query := `
+		SELECT id, username, email, password, age, profile_image_url
+		FROM users
+		WHERE id = $1
+	`
+	err := r.Db.QueryRowContext(ctx, query, id).Scan(&user.ID, &user.Username, &user.Email,
+		&user.Password, &user.Age, &user.ProfileImageURL)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, domain.ErrUserNotFound
+		}
+		return nil, err
+	}
+
+	return &user, nil
 }

@@ -49,55 +49,11 @@ func (s *PhotoService) Create(ctx context.Context, req *domain.CreatePhotoReques
 	return res, nil
 }
 
-func (s *PhotoService) GetAll(ctx context.Context) (*[]domain.GetPhotoResponse, error) {
-	ctx, cancel := context.WithTimeout(ctx, s.timeout)
-	defer cancel()
-
-	photos, err := s.PhotoRepository.FindAll(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	for i, photo := range *photos {
-		user, err := s.UserRepository.GetUserById(ctx, photo.UserID)
-		if err != nil {
-			return nil, err
-		}
-
-		(*photos)[i].User.ID = user.ID
-		(*photos)[i].User.Username = user.Username
-		(*photos)[i].User.Email = user.Email
-	}
-
-	return photos, nil
-}
-
-func (s *PhotoService) GetByID(ctx context.Context, id int) (*domain.GetPhotoResponse, error) {
-	ctx, cancel := context.WithTimeout(ctx, s.timeout)
-	defer cancel()
-
-	photo, err := s.PhotoRepository.FindByID(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	user, err := s.UserRepository.GetUserById(ctx, photo.UserID)
-	if err != nil {
-		return nil, err
-	}
-
-	photo.User.ID = user.ID
-	photo.User.Username = user.Username
-	photo.User.Email = user.Email
-
-	return photo, nil
-}
-
 func (s *PhotoService) Update(ctx context.Context, req *domain.UpdatePhotoRequest, photoId, userId int) (*domain.UpdatePhotoResponse, error) {
 	ctx, cancel := context.WithTimeout(ctx, s.timeout)
 	defer cancel()
 
-	checkPhoto, err := s.PhotoRepository.FindByID(ctx, photoId)
+	checkPhoto, err := s.PhotoRepository.FindPhotoByID(ctx, photoId)
 	if err != nil {
 		return nil, err
 	} else if checkPhoto.UserID != userId {
@@ -132,7 +88,7 @@ func (s *PhotoService) Delete(ctx context.Context, photoId, userId int) error {
 	ctx, cancel := context.WithTimeout(ctx, s.timeout)
 	defer cancel()
 
-	checkPhoto, err := s.PhotoRepository.FindByID(ctx, photoId)
+	checkPhoto, err := s.PhotoRepository.FindPhotoByID(ctx, photoId)
 	if err != nil {
 		return err
 	} else if checkPhoto.UserID != userId {
@@ -144,4 +100,48 @@ func (s *PhotoService) Delete(ctx context.Context, photoId, userId int) error {
 	}
 
 	return nil
+}
+
+func (s *PhotoService) GetPhotos(ctx context.Context) (*[]domain.GetPhotoResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, s.timeout)
+	defer cancel()
+
+	photos, err := s.PhotoRepository.FindPhotos(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for i, photo := range *photos {
+		user, err := s.UserRepository.FindUserById(ctx, photo.UserID)
+		if err != nil {
+			return nil, err
+		}
+
+		(*photos)[i].User.ID = user.ID
+		(*photos)[i].User.Username = user.Username
+		(*photos)[i].User.Email = user.Email
+	}
+
+	return photos, nil
+}
+
+func (s *PhotoService) GetPhotoByID(ctx context.Context, photoId int) (*domain.GetPhotoResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, s.timeout)
+	defer cancel()
+
+	photo, err := s.PhotoRepository.FindPhotoByID(ctx, photoId)
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := s.UserRepository.FindUserById(ctx, photo.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	photo.User.ID = user.ID
+	photo.User.Username = user.Username
+	photo.User.Email = user.Email
+
+	return photo, nil
 }

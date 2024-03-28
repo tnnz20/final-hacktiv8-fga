@@ -25,8 +25,8 @@ func NewPhotoRouter(e *echo.Echo, h *http.PhotoHandler, config echojwt.Config) {
 
 	// Public Route
 	photo := e.Group("/photos")
-	photo.GET("", h.GetAll)
-	photo.GET("/:photoId", h.GetByID)
+	photo.GET("", h.GetPhotos)
+	photo.GET("/:photoId", h.GetPhotoByID)
 
 	// Protected Route
 	protected := e.Group("/photos")
@@ -39,8 +39,8 @@ func NewPhotoRouter(e *echo.Echo, h *http.PhotoHandler, config echojwt.Config) {
 func NewCommentRouter(e *echo.Echo, h *http.CommentHandler, config echojwt.Config) {
 
 	// Public Route
-	// comment := e.Group("/comments")
-	// comment.GET("", h.GetAll)
+	comment := e.Group("/comments")
+	comment.GET("", h.GetComments)
 	// comment.GET("/:id", h.GetByID)
 
 	// Protected Route
