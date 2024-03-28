@@ -26,12 +26,8 @@ func (r PhotoRepository) Create(ctx context.Context, photo *domain.Photo) (*doma
 		VALUES ($1, $2, $3, $4)
 		RETURNING id
 	`
-	row, err := r.Db.QueryRowContext(ctx, query, photo.Title, photo.Caption, photo.PhotoURL, photo.UserID)
+	err := r.Db.QueryRowContext(ctx, query, photo.Title, photo.Caption, photo.PhotoURL, photo.UserID).Scan(&id)
 	if err != nil {
-		return nil, err
-	}
-
-	if err := row.Scan(&id); err != nil {
 		return nil, err
 	}
 
@@ -48,12 +44,10 @@ func (r PhotoRepository) Update(ctx context.Context, photo *domain.Photo) (*doma
 		RETURNING id, title, caption, photo_url, user_id
 	`
 
-	row, err := r.Db.QueryRowContext(ctx, query, photo.Title, photo.Caption, photo.PhotoURL, photo.ID)
+	err := r.Db.QueryRowContext(ctx, query, photo.Title, photo.Caption, photo.PhotoURL,
+		photo.ID).Scan(&photo.ID, &photo.Title, &photo.Caption,
+		&photo.PhotoURL, &photo.UserID)
 	if err != nil {
-		return nil, err
-	}
-
-	if err := row.Scan(&photo.ID, &photo.Title, &photo.Caption, &photo.PhotoURL, &photo.UserID); err != nil {
 		return nil, err
 	}
 
@@ -81,16 +75,12 @@ func (r PhotoRepository) FindByID(ctx context.Context, id int) (*domain.GetPhoto
 		FROM photos
 		WHERE id = $1
 	`
-	row, err := r.Db.QueryRowContext(ctx, query, id)
+	err := r.Db.QueryRowContext(ctx, query, id).Scan(&photo.ID, &photo.Title, &photo.Caption,
+		&photo.PhotoURL, &photo.UserID)
 	if err != nil {
-		if row.Err() == sql.ErrNoRows {
+		if err == sql.ErrNoRows {
 			return nil, domain.ErrPhotoNotFound
 		}
-		return nil, err
-	}
-
-	if err := row.Scan(&photo.ID, &photo.Title, &photo.Caption,
-		&photo.PhotoURL, &photo.UserID); err != nil {
 		return nil, err
 	}
 
@@ -100,13 +90,9 @@ func (r PhotoRepository) FindByID(ctx context.Context, id int) (*domain.GetPhoto
 		WHERE id = $1
 	`
 
-	row, err = r.Db.QueryRowContext(ctx, query, photo.UserID)
+	err = r.Db.QueryRowContext(ctx, query, photo.UserID).Scan(&photo.User.ID,
+		&photo.User.Email, &photo.User.Username)
 	if err != nil {
-		return nil, err
-	}
-
-	if err := row.Scan(&photo.User.ID,
-		&photo.User.Email, &photo.User.Username); err != nil {
 		return nil, err
 	}
 
@@ -139,13 +125,8 @@ func (r PhotoRepository) FindAll(ctx context.Context) (*[]domain.GetPhoto, error
 		}
 
 		query := `SELECT id, email, username FROM users WHERE id = $1`
-		row, err := r.Db.QueryRowContext(ctx, query, photo.UserID)
+		err = r.Db.QueryRowContext(ctx, query, photo.UserID).Scan(&photo.User.ID, &photo.User.Email, &photo.User.Username)
 		if err != nil {
-			return nil, err
-		}
-
-		if err := row.Scan(&photo.User.ID, &photo.User.Email,
-			&photo.User.Username); err != nil {
 			return nil, err
 		}
 
@@ -164,16 +145,12 @@ func (r PhotoRepository) FindByUserID(ctx context.Context, userId int) (*domain.
 		WHERE user_id = $1
 	`
 
-	row, err := r.Db.QueryRowContext(ctx, query, userId)
+	err := r.Db.QueryRowContext(ctx, query, userId).Scan(&photo.ID, &photo.Title, &photo.Caption,
+		&photo.PhotoURL, &photo.UserID)
 	if err != nil {
-		if row.Err() == sql.ErrNoRows {
+		if err == sql.ErrNoRows {
 			return nil, domain.ErrPhotoNotFound
 		}
-		return nil, err
-	}
-
-	if err := row.Scan(&photo.ID, &photo.Title, &photo.Caption,
-		&photo.PhotoURL, &photo.UserID); err != nil {
 		return nil, err
 	}
 

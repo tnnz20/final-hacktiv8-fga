@@ -25,13 +25,12 @@ func (r UserRepository) Create(ctx context.Context, user *domain.User) (*domain.
 		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id
 	`
-	row, err := r.Db.QueryRowContext(ctx, query, user.Username, user.Email,
-		user.Password, user.Age, user.ProfileImageURL)
+	err := r.Db.QueryRowContext(ctx, query, user.Username, user.Email,
+		user.Password, user.Age, user.ProfileImageURL).Scan(&id)
 	if err != nil {
-		return nil, err
-	}
-
-	if err := row.Scan(&id); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, domain.ErrUserNotFound
+		}
 		return nil, err
 	}
 
@@ -48,19 +47,14 @@ func (r UserRepository) GetUserByEmail(ctx context.Context, email string) (*doma
 		FROM users
 		WHERE email = $1
 	`
-	row, err := r.Db.QueryRowContext(ctx, query, email)
+	err := r.Db.QueryRowContext(ctx, query, email).Scan(&user.ID, &user.Username,
+		&user.Email, &user.Password, &user.Age, &user.ProfileImageURL)
 	if err != nil {
-		if row.Err() == sql.ErrNoRows {
+		if err == sql.ErrNoRows {
 			return nil, domain.ErrUserNotFound
 		}
 		return nil, err
 	}
-
-	if err := row.Scan(&user.ID, &user.Username, &user.Email,
-		&user.Password, &user.Age, &user.ProfileImageURL); err != nil {
-		return nil, err
-	}
-
 	return &user, nil
 }
 
@@ -72,16 +66,12 @@ func (r UserRepository) GetUserById(ctx context.Context, id int) (*domain.User, 
 		FROM users
 		WHERE id = $1
 	`
-	row, err := r.Db.QueryRowContext(ctx, query, id)
+	err := r.Db.QueryRowContext(ctx, query, id).Scan(&user.ID, &user.Username, &user.Email,
+		&user.Password, &user.Age, &user.ProfileImageURL)
 	if err != nil {
-		if row.Err() == sql.ErrNoRows {
+		if err == sql.ErrNoRows {
 			return nil, domain.ErrUserNotFound
 		}
-		return nil, err
-	}
-
-	if err := row.Scan(&user.ID, &user.Username, &user.Email,
-		&user.Password, &user.Age, &user.ProfileImageURL); err != nil {
 		return nil, err
 	}
 
@@ -96,14 +86,13 @@ func (r UserRepository) Update(ctx context.Context, user *domain.User) (*domain.
 		RETURNING id, username, email, age, profile_image_url
 	`
 
-	row, err := r.Db.QueryRowContext(ctx, query, user.Username, user.Email,
-		user.Age, user.ProfileImageURL, user.ID)
+	err := r.Db.QueryRowContext(ctx, query, user.Username, user.Email, user.Age,
+		user.ProfileImageURL, user.ID).Scan(&user.ID, &user.Username, &user.Email,
+		&user.Age, &user.ProfileImageURL)
 	if err != nil {
-		return nil, err
-	}
-
-	if err := row.Scan(&user.ID, &user.Username, &user.Email,
-		&user.Age, &user.ProfileImageURL); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, domain.ErrUserNotFound
+		}
 		return nil, err
 	}
 
