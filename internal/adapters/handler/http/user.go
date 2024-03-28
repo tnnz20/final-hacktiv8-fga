@@ -76,6 +76,10 @@ func (h *UserHandler) Login(c echo.Context) error {
 func (h *UserHandler) Update(c echo.Context) error {
 	var req domain.UpdateUserRequest
 
+	if err := c.Bind(&req); err != nil {
+		return utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
+	}
+
 	if err := h.Validate.Struct(req); err != nil {
 		var ve validator.ValidationErrors
 		if errors.As(err, &ve) {

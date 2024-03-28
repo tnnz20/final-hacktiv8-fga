@@ -103,15 +103,6 @@ func (s *UserService) Update(ctx context.Context, req *domain.UpdateUserRequest)
 	ctx, cancel := context.WithTimeout(ctx, s.timeout)
 	defer cancel()
 
-	user, err := s.UserRepository.GetUserById(ctx, req.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	if req.ProfileImageURL == "" {
-		req.ProfileImageURL = user.ProfileImageURL
-	}
-
 	userReq := &domain.User{
 		ID:              req.ID,
 		Username:        req.Username,
