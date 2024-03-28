@@ -1,5 +1,5 @@
 config-local.yaml
-Makefile
+
 
 # Binaries for programs and plugins
 *.exe
