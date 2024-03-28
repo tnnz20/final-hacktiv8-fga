@@ -41,12 +41,27 @@ func NewCommentRouter(e *echo.Echo, h *http.CommentHandler, config echojwt.Confi
 	// Public Route
 	comment := e.Group("/comments")
 	comment.GET("", h.GetComments)
-	// comment.GET("/:id", h.GetByID)
+	comment.GET("/:commentId", h.GetCommentByID)
 
 	// Protected Route
 	protected := e.Group("/comments")
 	protected.Use(echojwt.WithConfig(config))
 	protected.POST("", h.Create)
-	// protected.PUT("/:id", h.Update)
-	// protected.DELETE("/:id", h.Delete)
+	protected.PUT("/:commentId", h.Update)
+	protected.DELETE("/:commentId", h.Delete)
+}
+
+func NewSocialMediasRouter(e *echo.Echo, h *http.SocialMediaHandler, config echojwt.Config) {
+
+	// Public Route
+	socialMedia := e.Group("/socialmedias")
+	socialMedia.GET("", h.GetSocialMedias)
+	socialMedia.GET("/:socialMediaId", h.GetSocialMediaByID)
+
+	// Protected Route
+	protected := e.Group("/socialmedias")
+	protected.Use(echojwt.WithConfig(config))
+	protected.POST("", h.Create)
+	protected.PUT("/:socialMediaId", h.Update)
+	protected.DELETE("/:socialMediaId", h.Delete)
 }
