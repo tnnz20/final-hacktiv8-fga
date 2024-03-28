@@ -5,10 +5,8 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 
-	"github.com/tnnz20/final-hacktiv8-fga/internal/adapters/handler/http/middleware"
 	"github.com/tnnz20/final-hacktiv8-fga/internal/core/domain"
 	"github.com/tnnz20/final-hacktiv8-fga/internal/core/port"
 	"github.com/tnnz20/final-hacktiv8-fga/pkg/utils"
@@ -87,11 +85,10 @@ func (h *UserHandler) Update(c echo.Context) error {
 		return utils.ErrorResponse(c, http.StatusBadRequest, err.Error())
 	}
 
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(*middleware.JWTCustomClaims)
-	claimId := claims.ID
+	// Get user id from JWT
+	userId := utils.ClaimID(c)
 
-	req.ID = int(claimId)
+	req.ID = userId
 	res, err := h.UserService.Update(c.Request().Context(), &req)
 	if err != nil {
 		return utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
@@ -101,11 +98,10 @@ func (h *UserHandler) Update(c echo.Context) error {
 }
 
 func (h *UserHandler) Delete(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(*middleware.JWTCustomClaims)
-	claimId := claims.ID
+	// Get user id from JWT
+	userId := utils.ClaimID(c)
 
-	err := h.UserService.Delete(c.Request().Context(), int(claimId))
+	err := h.UserService.Delete(c.Request().Context(), userId)
 	if err != nil {
 		return utils.ErrorResponse(c, http.StatusInternalServerError, err.Error())
 	}
