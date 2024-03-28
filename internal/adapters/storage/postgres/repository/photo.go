@@ -59,8 +59,16 @@ func (r PhotoRepository) Delete(ctx context.Context, id int) error {
 		DELETE FROM photos
 		WHERE id = $1
 	`
-	_, err := r.Db.ExecContext(ctx, query, id)
+	res, err := r.Db.ExecContext(ctx, query, id)
 	if err != nil {
+		return err
+	}
+
+	row, err := res.RowsAffected()
+	if err != nil {
+		if row == 0 {
+			return err
+		}
 		return err
 	}
 
@@ -81,18 +89,6 @@ func (r PhotoRepository) FindByID(ctx context.Context, id int) (*domain.GetPhoto
 		if err == sql.ErrNoRows {
 			return nil, domain.ErrPhotoNotFound
 		}
-		return nil, err
-	}
-
-	query = `
-		SELECT id, email, username 
-		FROM users 
-		WHERE id = $1
-	`
-
-	err = r.Db.QueryRowContext(ctx, query, photo.UserID).Scan(&photo.User.ID,
-		&photo.User.Email, &photo.User.Username)
-	if err != nil {
 		return nil, err
 	}
 
@@ -124,35 +120,8 @@ func (r PhotoRepository) FindAll(ctx context.Context) (*[]domain.GetPhoto, error
 			return nil, err
 		}
 
-		query := `SELECT id, email, username FROM users WHERE id = $1`
-		err = r.Db.QueryRowContext(ctx, query, photo.UserID).Scan(&photo.User.ID, &photo.User.Email, &photo.User.Username)
-		if err != nil {
-			return nil, err
-		}
-
 		photos = append(photos, photo)
 	}
 
 	return &photos, nil
-}
-
-func (r PhotoRepository) FindByUserID(ctx context.Context, userId int) (*domain.Photo, error) {
-	var photo domain.Photo
-
-	query := `
-		SELECT id, title, caption, photo_url, user_id
-		FROM photos
-		WHERE user_id = $1
-	`
-
-	err := r.Db.QueryRowContext(ctx, query, userId).Scan(&photo.ID, &photo.Title, &photo.Caption,
-		&photo.PhotoURL, &photo.UserID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, domain.ErrPhotoNotFound
-		}
-		return nil, err
-	}
-
-	return &photo, nil
 }
