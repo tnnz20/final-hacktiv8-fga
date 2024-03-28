@@ -2,8 +2,6 @@ package service
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -34,9 +32,9 @@ func (s *UserService) Register(ctx context.Context, req *domain.CreateUserReques
 	user, err := s.UserRepository.GetUserByEmail(ctx, req.Email)
 	if err == nil {
 		if user.Email == req.Email {
-			return nil, errors.New("email already exists")
+			return nil, domain.ErrEmailExist
 		} else if user.Username == req.Username {
-			return nil, errors.New("username already exists")
+			return nil, domain.ErrUsernameExist
 		}
 	}
 
@@ -80,7 +78,7 @@ func (s *UserService) Login(ctx context.Context, req *domain.LoginUserRequest) (
 	}
 
 	if err = utils.ComparePassword(req.Password, user.Password); err != nil {
-		return nil, errors.New("invalid password")
+		return nil, domain.ErrWrongPassword
 	}
 
 	t := jwt.New(jwt.SigningMethodHS256)
@@ -141,8 +139,6 @@ func (s *UserService) Update(ctx context.Context, req *domain.UpdateUserRequest)
 func (s *UserService) Delete(ctx context.Context, id int) error {
 	ctx, cancel := context.WithTimeout(ctx, s.timeout)
 	defer cancel()
-
-	fmt.Printf("%v", id)
 
 	if _, err := s.UserRepository.GetUserById(ctx, id); err != nil {
 		return err
