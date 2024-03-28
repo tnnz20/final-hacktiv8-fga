@@ -11,7 +11,7 @@ type JWTCustomClaims struct {
 	jwt.RegisteredClaims
 }
 
-func JWTconfig(key *string) echojwt.Config {
+func JWTConfig(key *string) echojwt.Config {
 	config := echojwt.Config{
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
 			return new(JWTCustomClaims)
