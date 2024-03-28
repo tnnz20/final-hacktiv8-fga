@@ -75,8 +75,8 @@ func (r PhotoRepository) Delete(ctx context.Context, photoId int) error {
 	return nil
 }
 
-func (r PhotoRepository) FindPhotoByID(ctx context.Context, photoId int) (*domain.GetPhotoResponse, error) {
-	var photo domain.GetPhotoResponse
+func (r PhotoRepository) FindPhotoByID(ctx context.Context, photoId int) (*domain.Photo, error) {
+	var photo domain.Photo
 
 	query := `
 		SELECT id, title, caption, photo_url, user_id
@@ -95,8 +95,8 @@ func (r PhotoRepository) FindPhotoByID(ctx context.Context, photoId int) (*domai
 	return &photo, nil
 }
 
-func (r PhotoRepository) FindPhotos(ctx context.Context) (*[]domain.GetPhotoResponse, error) {
-	var photos []domain.GetPhotoResponse
+func (r PhotoRepository) FindPhotos(ctx context.Context) (*[]domain.Photo, error) {
+	var photos []domain.Photo
 
 	query := `
 		SELECT id, title, caption, photo_url, user_id
@@ -113,7 +113,7 @@ func (r PhotoRepository) FindPhotos(ctx context.Context) (*[]domain.GetPhotoResp
 	defer rows.Close()
 
 	for rows.Next() {
-		var photo domain.GetPhotoResponse
+		var photo domain.Photo
 		err := rows.Scan(&photo.ID, &photo.Title, &photo.Caption,
 			&photo.PhotoURL, &photo.UserID)
 		if err != nil {

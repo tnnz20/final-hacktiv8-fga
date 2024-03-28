@@ -10,8 +10,8 @@ type PhotoRepository interface {
 	Create(ctx context.Context, photo *domain.Photo) (*domain.Photo, error)
 	Update(ctx context.Context, photo *domain.Photo) (*domain.Photo, error)
 	Delete(ctx context.Context, photoId int) error
-	FindPhotoByID(ctx context.Context, photoId int) (*domain.GetPhotoResponse, error)
-	FindPhotos(ctx context.Context) (*[]domain.GetPhotoResponse, error)
+	FindPhotoByID(ctx context.Context, photoId int) (*domain.Photo, error)
+	FindPhotos(ctx context.Context) (*[]domain.Photo, error)
 }
 
 type PhotoService interface {
