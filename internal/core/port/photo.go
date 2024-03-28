@@ -12,7 +12,6 @@ type PhotoRepository interface {
 	Delete(ctx context.Context, id int) error
 	FindByID(ctx context.Context, id int) (*domain.GetPhoto, error)
 	FindAll(ctx context.Context) (*[]domain.GetPhoto, error)
-	FindByUserID(ctx context.Context, userId int) (*domain.Photo, error)
 }
 
 type PhotoService interface {
