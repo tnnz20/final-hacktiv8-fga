@@ -117,7 +117,7 @@ func (s *CommentService) GetComments(ctx context.Context) (*[]domain.GetCommentR
 	}
 
 	var responses []domain.GetCommentResponse
-	for i, comment := range *comments {
+	for _, comment := range *comments {
 
 		user, err := s.UserRepository.FindUserById(ctx, comment.UserID)
 		if err != nil {
@@ -144,10 +144,10 @@ func (s *CommentService) GetComments(ctx context.Context) (*[]domain.GetCommentR
 		}
 
 		res := domain.GetCommentResponse{
-			ID:      (*comments)[i].ID,
-			Message: (*comments)[i].Message,
-			PhotoID: (*comments)[i].PhotoID,
-			UserID:  (*comments)[i].UserID,
+			ID:      comment.ID,
+			Message: comment.Message,
+			PhotoID: comment.PhotoID,
+			UserID:  comment.UserID,
 			User:    userDetail,
 			Photo:   photoDetail,
 		}

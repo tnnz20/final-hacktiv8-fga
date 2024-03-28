@@ -112,7 +112,7 @@ func (s *PhotoService) GetPhotos(ctx context.Context) (*[]domain.GetPhotoRespons
 	}
 
 	var responses []domain.GetPhotoResponse
-	for i, photo := range *photos {
+	for _, photo := range *photos {
 		user, err := s.UserRepository.FindUserById(ctx, photo.UserID)
 		if err != nil {
 			return nil, err
@@ -125,11 +125,11 @@ func (s *PhotoService) GetPhotos(ctx context.Context) (*[]domain.GetPhotoRespons
 		}
 
 		res := domain.GetPhotoResponse{
-			ID:       (*photos)[i].ID,
-			Title:    (*photos)[i].Title,
-			Caption:  (*photos)[i].Caption,
-			PhotoURL: (*photos)[i].PhotoURL,
-			UserID:   (*photos)[i].UserID,
+			ID:       photo.ID,
+			Title:    photo.Title,
+			Caption:  photo.Caption,
+			PhotoURL: photo.PhotoURL,
+			UserID:   photo.UserID,
 			User:     userDetail,
 		}
 
