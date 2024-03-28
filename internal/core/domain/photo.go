@@ -2,12 +2,19 @@ package domain
 
 type Photo struct {
 	ID       int
-	Title    string
 	Caption  string
+	Title    string
 	PhotoURL string
 	UserID   int
 }
 
+type PhotoDetail struct {
+	ID       int    `json:"id"`
+	Caption  string `json:"caption"`
+	Title    string `json:"title"`
+	PhotoURL string `json:"photo_url"`
+	UserID   int    `json:"user_id"`
+}
 type CreatePhotoRequest struct {
 	Title    string `json:"title" validate:"required"`
 	Caption  string `json:"caption" validate:"required"`
@@ -16,24 +23,19 @@ type CreatePhotoRequest struct {
 
 type CreatePhotoResponse struct {
 	ID       int    `json:"id"`
-	Title    string `json:"title"`
 	Caption  string `json:"caption"`
+	Title    string `json:"title"`
 	PhotoURL string `json:"photo_url"`
 	UserID   int    `json:"user_id"`
 }
 
-type userPhoto struct {
-	ID       int    `json:"id"`
-	Email    string `json:"email"`
-	Username string `json:"username"`
-}
-type GetPhoto struct {
-	ID       int       `json:"id"`
-	Caption  string    `json:"caption"`
-	Title    string    `json:"title"`
-	PhotoURL string    `json:"photo_url"`
-	UserID   int       `json:"user_id"`
-	User     userPhoto `json:"user"`
+type GetPhotoResponse struct {
+	ID       int        `json:"id"`
+	Caption  string     `json:"caption"`
+	Title    string     `json:"title"`
+	PhotoURL string     `json:"photo_url"`
+	UserID   int        `json:"user_id"`
+	User     UserDetail `json:"user"`
 }
 
 type UpdatePhotoRequest struct {
@@ -44,8 +46,8 @@ type UpdatePhotoRequest struct {
 
 type UpdatePhotoResponse struct {
 	ID       int    `json:"id"`
-	Title    string `json:"title"`
 	Caption  string `json:"caption"`
+	Title    string `json:"title"`
 	PhotoURL string `json:"photo_url"`
 	UserID   int    `json:"user_id"`
 }

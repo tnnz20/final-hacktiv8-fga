@@ -13,6 +13,12 @@ type User struct {
 	UpdatedAt       time.Time
 }
 
+type UserDetail struct {
+	ID       int    `json:"id"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+}
+
 type CreateUserRequest struct {
 	Username        string `json:"username" validate:"required"`
 	Email           string `json:"email" validate:"required,email"`

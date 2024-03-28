@@ -49,7 +49,7 @@ func (s *PhotoService) Create(ctx context.Context, req *domain.CreatePhotoReques
 	return res, nil
 }
 
-func (s *PhotoService) GetAll(ctx context.Context) (*[]domain.GetPhoto, error) {
+func (s *PhotoService) GetAll(ctx context.Context) (*[]domain.GetPhotoResponse, error) {
 	ctx, cancel := context.WithTimeout(ctx, s.timeout)
 	defer cancel()
 
@@ -72,7 +72,7 @@ func (s *PhotoService) GetAll(ctx context.Context) (*[]domain.GetPhoto, error) {
 	return photos, nil
 }
 
-func (s *PhotoService) GetByID(ctx context.Context, id int) (*domain.GetPhoto, error) {
+func (s *PhotoService) GetByID(ctx context.Context, id int) (*domain.GetPhotoResponse, error) {
 	ctx, cancel := context.WithTimeout(ctx, s.timeout)
 	defer cancel()
 
