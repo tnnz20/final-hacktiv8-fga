@@ -13,4 +13,10 @@ var (
 
 	ErrPhotoNotFound = errors.New("photo not found")
 	ErrPhotosEmpty   = errors.New("photos still empty")
+
+	ErrCommentNotFound = errors.New("comment not found")
+	ErrCommentsEmpty   = errors.New("comments still empty")
+
+	ErrSocialMediaNotFound = errors.New("social media not found")
+	ErrSocialMediasEmpty   = errors.New("social medias still empty")
 )
